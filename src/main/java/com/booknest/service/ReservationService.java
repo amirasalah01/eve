@@ -78,4 +78,13 @@ public class ReservationService {
         reservation.setStatut(statut);
         reservationRepository.save(reservation);
     }
+
+    public java.util.Optional<Reservation> findById(Long id) {
+        return reservationRepository.findById(id);
+    }
+
+    @Transactional
+    public void deleteById(Long id) {
+        reservationRepository.deleteById(id);
+    }
 }
