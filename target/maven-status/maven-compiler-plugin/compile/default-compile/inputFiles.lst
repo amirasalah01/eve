@@ -5,6 +5,7 @@
 /home/runner/work/eve/eve/src/main/java/com/booknest/model/Reservation.java
 /home/runner/work/eve/eve/src/main/java/com/booknest/service/ReservationService.java
 /home/runner/work/eve/eve/src/main/java/com/booknest/controller/ReservationController.java
+/home/runner/work/eve/eve/src/main/java/com/booknest/config/PasswordEncoderConfig.java
 /home/runner/work/eve/eve/src/main/java/com/booknest/controller/AuthController.java
 /home/runner/work/eve/eve/src/main/java/com/booknest/repository/UserRepository.java
 /home/runner/work/eve/eve/src/main/java/com/booknest/repository/ReservationRepository.java

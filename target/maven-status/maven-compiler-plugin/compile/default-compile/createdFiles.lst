@@ -17,6 +17,7 @@ com/booknest/model/User$Role.class
 com/booknest/repository/UserRepository.class
 com/booknest/repository/SalleRepository.class
 com/booknest/model/Reservation.class
+com/booknest/config/PasswordEncoderConfig.class
 com/booknest/model/Avis$AvisBuilder.class
 com/booknest/model/Salle$SalleBuilder.class
 com/booknest/service/SalleService.class

@@ -87,7 +87,7 @@ public class SalleController {
         Salle salle = salleService.findById(salleId)
                 .orElseThrow(() -> new IllegalArgumentException("Salle introuvable"));
         com.booknest.model.User user = userRepository.findByEmail(userDetails.getUsername())
-                .orElseThrow();
+                .orElseThrow(() -> new IllegalArgumentException("Utilisateur introuvable: " + userDetails.getUsername()));
 
         Avis avis = Avis.builder()
                 .salle(salle)

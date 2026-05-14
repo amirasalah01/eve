@@ -84,8 +84,10 @@
                             </td>
                             <td class="text-muted small">
                                 <i class="bi bi-clock me-1"></i>
-                                <span th:with="h=${#temporals.hour(r.dateFin) - #temporals.hour(r.dateDebut)}"
-                                      th:text="${h > 0 ? h + 'h' : ''}">1h</span>
+                                <span th:with="dur=${T(java.time.Duration).between(r.dateDebut, r.dateFin)},
+                                              h=${dur.toHours()},
+                                              m=${dur.toMinutesPart()}"
+                                      th:text="${h + 'h' + (m > 0 ? m + 'min' : '')}">1h</span>
                             </td>
                             <td>
                                 <span th:if="${r.statut.name() == 'EN_ATTENTE'}"

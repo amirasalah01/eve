@@ -101,9 +101,15 @@ public class AdminController {
                 }
                 // Sanitize original filename: keep only the base name (no path separators) and alphanumeric/safe characters
                 String originalFilename = imageFile.getOriginalFilename();
-                String safeOriginalName = (originalFilename != null)
-                        ? Paths.get(originalFilename).getFileName().toString().replaceAll("[^a-zA-Z0-9._-]", "_")
+                String baseName = (originalFilename != null)
+                        ? Paths.get(originalFilename).getFileName().toString()
                         : "image";
+                // Reject filenames with consecutive dots or starting with a dot to prevent path traversal
+                if (baseName.startsWith(".") || baseName.contains("..")) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Nom de fichier invalide.");
+                    return "redirect:/admin/salles";
+                }
+                String safeOriginalName = baseName.replaceAll("[^a-zA-Z0-9._-]", "_");
                 String filename = UUID.randomUUID() + "_" + safeOriginalName;
                 Path targetPath = uploadPath.resolve(filename).normalize();
                 // Ensure the resolved path stays within the upload directory
@@ -162,16 +168,25 @@ public class AdminController {
         sb.append("ID,Salle,Utilisateur,Date Début,Date Fin,Statut\n");
         for (Reservation r : all) {
             sb.append(r.getId()).append(",")
-              .append(r.getSalle().getNom()).append(",")
-              .append(r.getUser().getNom()).append(",")
-              .append(r.getDateDebut()).append(",")
-              .append(r.getDateFin()).append(",")
-              .append(r.getStatut()).append("\n");
+              .append(escapeCsvField(r.getSalle().getNom())).append(",")
+              .append(escapeCsvField(r.getUser().getNom())).append(",")
+              .append(escapeCsvField(r.getDateDebut().toString())).append(",")
+              .append(escapeCsvField(r.getDateFin().toString())).append(",")
+              .append(escapeCsvField(r.getStatut().name())).append("\n");
         }
-        byte[] csvBytes = sb.toString().getBytes();
+        byte[] csvBytes = sb.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8);
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"reservations.csv\"")
-                .contentType(MediaType.parseMediaType("text/csv"))
+                .contentType(MediaType.parseMediaType("text/csv; charset=UTF-8"))
                 .body(csvBytes);
+    }
+
+    private String escapeCsvField(String value) {
+        if (value == null) return "";
+        // Wrap in quotes if field contains comma, quote, or newline
+        if (value.contains(",") || value.contains("\"") || value.contains("\n") || value.contains("\r")) {
+            return "\"" + value.replace("\"", "\"\"") + "\"";
+        }
+        return value;
     }
 }
