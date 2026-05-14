@@ -52,11 +52,10 @@ public class AvisApiController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,
+    public ResponseEntity<AvisDto> update(@PathVariable Long id,
                                      @Valid @RequestBody AvisRequest req) {
         return avisService.update(id, req.getNote(), req.getCommentaire())
                 .map(a -> ResponseEntity.ok(toDto(a)))
-                .<ResponseEntity<?>>map(r -> r)
                 .orElse(ResponseEntity.notFound().build());
     }
 

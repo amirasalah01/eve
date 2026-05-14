@@ -42,7 +42,7 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()
             )
-            .csrf(csrf -> csrf.disable())
+            .csrf(csrf -> csrf.disable())   // REST API is stateless – no session-based CSRF needed
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )

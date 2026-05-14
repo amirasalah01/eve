@@ -53,7 +53,7 @@ public class UserApiController {
                                            @Valid @RequestBody UserRequest req) {
         return userService.findById(id).map(existing -> {
             existing.setNom(req.getNom());
-            existing.setEmail(req.getEmail());
+            // email is not updated to keep it as the unique identifier
             User saved = userService.save(existing);
             return ResponseEntity.ok(toDto(saved));
         }).orElse(ResponseEntity.notFound().build());
