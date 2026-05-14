@@ -22,6 +22,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SalleController {
 
+    private static final int FEATURED_SALLES_LIMIT = 3;
+
     private final SalleService salleService;
     private final AvisRepository avisRepository;
     private final UserRepository userRepository;
@@ -29,7 +31,7 @@ public class SalleController {
     @GetMapping("/")
     public String indexPage(Model model) {
         Page<Salle> sallesPage = salleService.findAll(PageRequest.of(0, 6, Sort.by("nom")));
-        model.addAttribute("featuredSalles", sallesPage.getContent().stream().limit(3).toList());
+        model.addAttribute("featuredSalles", sallesPage.getContent().stream().limit(FEATURED_SALLES_LIMIT).toList());
         model.addAttribute("sallesPage", sallesPage);
         return "index";
     }

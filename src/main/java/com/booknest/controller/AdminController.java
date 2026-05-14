@@ -95,12 +95,23 @@ public class AdminController {
                             RedirectAttributes redirectAttributes) {
         if (imageFile != null && !imageFile.isEmpty()) {
             try {
-                Path uploadPath = Paths.get(uploadDir);
+                Path uploadPath = Paths.get(uploadDir).toAbsolutePath().normalize();
                 if (!Files.exists(uploadPath)) {
                     Files.createDirectories(uploadPath);
                 }
-                String filename = UUID.randomUUID() + "_" + imageFile.getOriginalFilename();
-                Files.copy(imageFile.getInputStream(), uploadPath.resolve(filename), StandardCopyOption.REPLACE_EXISTING);
+                // Sanitize original filename: keep only the base name (no path separators) and alphanumeric/safe characters
+                String originalFilename = imageFile.getOriginalFilename();
+                String safeOriginalName = (originalFilename != null)
+                        ? Paths.get(originalFilename).getFileName().toString().replaceAll("[^a-zA-Z0-9._-]", "_")
+                        : "image";
+                String filename = UUID.randomUUID() + "_" + safeOriginalName;
+                Path targetPath = uploadPath.resolve(filename).normalize();
+                // Ensure the resolved path stays within the upload directory
+                if (!targetPath.startsWith(uploadPath)) {
+                    redirectAttributes.addFlashAttribute("errorMessage", "Nom de fichier invalide.");
+                    return "redirect:/admin/salles";
+                }
+                Files.copy(imageFile.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
                 salle.setImageUrl(filename);
             } catch (IOException e) {
                 redirectAttributes.addFlashAttribute("errorMessage", "Erreur lors du téléchargement de l'image.");
