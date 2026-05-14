@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gestion des Salles | BookNest Admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css"/>
+    <link rel="stylesheet" th:href="@{/css/style.css}"/>
+</head>
+<body>
+
+<nav th:replace="~{fragments/navbar :: navbar}"></nav>
+
+<div class="page-header py-4">
+    <div class="container-fluid px-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="page-title"><i class="bi bi-building me-2"></i>Gestion des Salles</h1>
+                <p class="page-subtitle mb-0">Ajoutez, modifiez ou supprimez des salles.</p>
+            </div>
+            <a th:href="@{/admin/salles/new}" class="btn btn-gold">
+                <i class="bi bi-plus-circle me-2"></i>Ajouter une salle
+            </a>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid py-4 px-4">
+
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill me-2"></i>
+        <span th:text="${successMessage}">Succès</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <span th:text="${errorMessage}">Erreur</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <span th:text="${sallesPage.totalElements}">0</span> salle(s) au total
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>#</th>
+                            <th>Nom</th>
+                            <th>Localisation</th>
+                            <th>Capacité</th>
+                            <th>Disponible</th>
+                            <th class="text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="salle : ${sallesPage.content}">
+                            <td th:text="${salle.id}">#</td>
+                            <td>
+                                <a th:href="@{/salles/{id}(id=${salle.id})}"
+                                   class="fw-semibold text-decoration-none"
+                                   th:text="${salle.nom}">Salle</a>
+                            </td>
+                            <td th:text="${salle.localisation}">Lieu</td>
+                            <td>
+                                <span class="badge badge-capacity">
+                                    <i class="bi bi-people-fill me-1"></i>
+                                    <span th:text="${salle.capacite}">0</span>
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge bg-success" th:if="${salle.disponible}">Oui</span>
+                                <span class="badge bg-danger" th:unless="${salle.disponible}">Non</span>
+                            </td>
+                            <td class="text-center">
+                                <div class="btn-group btn-group-sm">
+                                    <a th:href="@{/admin/salles/edit/{id}(id=${salle.id})}"
+                                       class="btn btn-outline-primary">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <form th:action="@{/admin/salles/delete/{id}(id=${salle.id})}"
+                                          method="post" style="display:inline"
+                                          onsubmit="return confirm('Supprimer cette salle ?')">
+                                        <button type="submit" class="btn btn-outline-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr th:if="${sallesPage.empty}">
+                            <td colspan="6" class="text-center text-muted py-3">Aucune salle.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Pagination -->
+        <div class="card-footer d-flex justify-content-between align-items-center" th:if="${totalPages > 1}">
+            <span class="text-muted small">Page <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span></span>
+            <nav>
+                <ul class="pagination pagination-sm mb-0">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/salles(page=${currentPage - 1})}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link" th:text="${i + 1}"
+                           th:href="@{/admin/salles(page=${i})}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                        <a class="page-link" th:href="@{/admin/salles(page=${currentPage + 1})}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
